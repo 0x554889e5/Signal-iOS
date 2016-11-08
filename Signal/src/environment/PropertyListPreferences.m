@@ -1,6 +1,7 @@
 #import "PropertyListPreferences.h"
 #import "Constraints.h"
 #import "TSStorageHeaders.h"
+#import <SignalServiceKit/TSUserPreferences.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -44,6 +45,11 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
     [TSStorageManager.sharedManager setObject:value
                                        forKey:key
                                  inCollection:PropertyListPreferencesSignalDatabaseCollection];
+}
+
+- (TSUserPreferences *)tsPreferences
+{
+    return [TSUserPreferences sharedInstance];
 }
 
 #pragma mark - Specific Preferences
@@ -200,6 +206,19 @@ NSString *const PropertyListPreferencesKeyLastRecordedVoipToken = @"LastRecorded
             DDLogWarn(@"Undefined NotificationType in Settings");
             return @"";
     }
+}
+
+#pragma mark - Block on Identity Change
+
+- (BOOL)shouldBlockOnIdentityChange
+{
+    return self.tsPreferences.shouldBlockOnIdentityChange;
+}
+
+- (void)setShouldBlockOnIdentityChange:(BOOL)value
+{
+    self.tsPreferences.shouldBlockOnIdentityChange = value;
+    [self.tsPreferences save];
 }
 
 #pragma mark - Push Tokens
